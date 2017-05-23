@@ -5,11 +5,14 @@ import static edu.tamu.framework.enums.BusinessValidationType.CREATE;
 import static edu.tamu.framework.enums.BusinessValidationType.EXISTS;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 import org.tdl.vireo.model.FieldGloss;
 import org.tdl.vireo.model.Language;
 import org.tdl.vireo.model.repo.FieldGlossRepo;
 import org.tdl.vireo.model.repo.LanguageRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiValidatedModel;
@@ -30,6 +33,10 @@ public class FieldGlossController {
 
     @Autowired
     private LanguageRepo languageRepo;
+    
+    @Autowired private SimpMessagingTemplate simpMessagingTemplate;
+    
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Endpoint to request all field glosses.
