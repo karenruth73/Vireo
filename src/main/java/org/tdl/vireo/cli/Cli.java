@@ -2,6 +2,7 @@ package org.tdl.vireo.cli;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,13 @@ import org.tdl.vireo.model.repo.SubmissionStateRepo;
 import org.tdl.vireo.model.repo.UserRepo;
 
 import edu.tamu.framework.model.Credentials;
+
+
+/*
+ * A command line runner for Vireo development. Accessed via: 
+ * $ mvn -Drun.arguments="console" spring-boot:run
+ * 
+ */
 @Component
 public class Cli implements CommandLineRunner {
 
@@ -109,12 +117,17 @@ public class Cli implements CommandLineRunner {
 						for(int i = itemsGenerated; i < num + itemsGenerated; i++) {
 							User submitter = userRepo.create("bob" + (i+1) + "@boring.bob", "bob", "boring", AppRole.STUDENT);
 							Credentials credentials = new Credentials();
-							credentials.setFirstName("Bob");
-							credentials.setLastName("Boring");
-							credentials.setEmail("bob@boring.bob");
-							credentials.setRole("bore");
-							credentials.setAllCredentials(new HashMap<String, String>());
-
+							
+							Map<String, String> allCredentials = new HashMap<String, String>();
+							
+							allCredentials.put("firstName", "Bob");
+							allCredentials.put("lastName", "Boring");
+							allCredentials.put("email", "bob@boring.bob");
+							allCredentials.put("role", "bore");
+							allCredentials.put("uin", "123456789");
+							
+							credentials.setAllCredentials(allCredentials);
+							
 							Submission sub = submissionRepo.create(submitter, org, state, credentials);
 							for(SubmissionWorkflowStep step : sub.getSubmissionWorkflowSteps() ) {
 								for(SubmissionFieldProfile fp : step.getAggregateFieldProfiles()) {

@@ -63,10 +63,7 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
             // populate fieldValues with models for empty values
             angular.forEach(submission.submissionWorkflowSteps, function(submissionWorkflowStep) {
                 angular.forEach(submissionWorkflowStep.aggregateFieldProfiles, function(fp) {
-                    var fieldValuesByFieldPredicate = submission.getFieldValuesByFieldPredicate(fp.fieldPredicate);
-                    if (!fieldValuesByFieldPredicate.length) {
-                        submission.fieldValues.push(createEmptyFieldValue(fp.fieldPredicate));
-                    }
+                    fp.fieldValues.push(createEmptyFieldValue(fp.fieldPredicate));
                 });
             });
         });

@@ -221,7 +221,7 @@ vireo.directive("field", function($controller, $filter, $q, $timeout, FileUpload
             } 
 
             var refreshFieldValues = function() {
-                $scope.fieldValues = $filter('fieldValuePerProfile')($scope.submission.fieldValues, $scope.profile.fieldPredicate);
+                $scope.fieldValues = $filter('fieldValuePerProfile')($scope.profile.fieldValues, $scope.profile.fieldPredicate);
                 $scope.fieldValue = $scope.fieldValues[0];
 
                 for (var i in $scope.fieldValues) {

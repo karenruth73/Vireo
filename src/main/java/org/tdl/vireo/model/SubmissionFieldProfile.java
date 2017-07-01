@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+
+import static javax.persistence.CascadeType.REFRESH;
 import static javax.persistence.FetchType.EAGER;
 
 import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
@@ -14,7 +16,7 @@ import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
 @DiscriminatorValue("Sub")
 public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionFieldProfile> {
 
-    @OneToMany(orphanRemoval=true, fetch=EAGER)
+    @OneToMany(cascade = { REFRESH }, orphanRemoval=true, fetch=EAGER)
     private List<FieldValue> fieldValues;
     
     public SubmissionFieldProfile() {

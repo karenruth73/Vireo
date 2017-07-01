@@ -3,6 +3,7 @@
 		<label>{{profile.fieldGlosses[0].value}}:</label>
 	</div>
 	<div class="col-xs-12 col-sm-10">
-		<span ng-repeat="fv in submission.getFieldValuesByFieldPredicate(profile.fieldPredicate)">{{fv.value}}</span>
+  {{profile}}
+  	<span ng-repeat="fv in profile.fieldValues">{{fv}}</span>
 	</div>
 </div>
