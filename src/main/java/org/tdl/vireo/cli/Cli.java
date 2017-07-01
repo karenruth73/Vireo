@@ -1,5 +1,6 @@
 package org.tdl.vireo.cli;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -112,6 +113,7 @@ public class Cli implements CommandLineRunner {
 							credentials.setLastName("Boring");
 							credentials.setEmail("bob@boring.bob");
 							credentials.setRole("bore");
+							credentials.setAllCredentials(new HashMap<String, String>());
 
 							Submission sub = submissionRepo.create(submitter, org, state, credentials);
 							for(SubmissionWorkflowStep step : sub.getSubmissionWorkflowSteps() ) {
