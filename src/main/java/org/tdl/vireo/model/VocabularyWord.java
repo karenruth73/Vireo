@@ -38,6 +38,9 @@ public class VocabularyWord extends BaseEntity {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = VocabularyWord.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private ControlledVocabulary controlledVocabulary;
+    
+    @ManyToOne
+    private EmailGroup emailGroup;
 
     public VocabularyWord() {
         setModelValidator(new VocabularyWordValidator());
@@ -93,6 +96,14 @@ public class VocabularyWord extends BaseEntity {
 
     public void setControlledVocabulary(ControlledVocabulary controlledVocabulary) {
         this.controlledVocabulary = controlledVocabulary;
+    }
+
+    public EmailGroup getEmailGroup() {
+        return emailGroup;
+    }
+
+    public void setEmailGroup(EmailGroup emailGroup) {
+        this.emailGroup = emailGroup;
     }
 
 }

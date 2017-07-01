@@ -73,6 +73,9 @@ public class Organization extends BaseEntity {
 
     @OneToMany(cascade = { REFRESH, MERGE, REMOVE }, orphanRemoval = true, fetch = EAGER)
     private List<EmailWorkflowRule> emailWorkflowRules;
+    
+    @ManyToOne
+    private EmailGroup emailGroup;
 
     public Organization() {
         setModelValidator(new OrganizationValidator());
@@ -458,6 +461,14 @@ public class Organization extends BaseEntity {
         }
 
         return parentOrganizationHiarchy;
+    }
+
+    public EmailGroup getEmailGroup() {
+        return emailGroup;
+    }
+
+    public void setEmailGroup(EmailGroup emailGroup) {
+        this.emailGroup = emailGroup;
     }
 
 }

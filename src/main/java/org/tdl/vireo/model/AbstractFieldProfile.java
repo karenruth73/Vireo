@@ -62,6 +62,9 @@ public abstract class AbstractFieldProfile<FP> extends BaseEntity {
 
     @Column(nullable = true)
     private Boolean flagged;
+    
+    @ManyToOne
+    private FieldType fieldType;
 
     /**
      * @return the fieldPredicate

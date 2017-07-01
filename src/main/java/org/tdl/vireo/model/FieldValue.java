@@ -21,8 +21,12 @@ public class FieldValue extends BaseEntity {
     @Column(nullable = true)
     private String identifier;
 
+    //TODO remove
     @ManyToOne(cascade = { DETACH, REFRESH, MERGE }, optional = false)
     private FieldPredicate fieldPredicate;
+    
+    @ManyToOne
+    private SubmissionFieldProfile submissionFieldProfile;
 
     public FieldValue() {
     }
@@ -79,6 +83,14 @@ public class FieldValue extends BaseEntity {
         String fullFileName = value.substring(value.lastIndexOf("/") + 1, value.length());
         String fileName = fullFileName.substring(fullFileName.indexOf("-") + 1, fullFileName.length());
         return fileName;
+    }
+
+    public SubmissionFieldProfile getSubmissionFieldProfile() {
+        return submissionFieldProfile;
+    }
+
+    public void setSubmissionFieldProfile(SubmissionFieldProfile submissionFieldProfile) {
+        this.submissionFieldProfile = submissionFieldProfile;
     }
 
 }
