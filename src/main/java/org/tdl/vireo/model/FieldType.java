@@ -19,7 +19,6 @@ public class FieldType extends BaseEntity {
     private String name;
 
     @ManyToOne(cascade = REFRESH, fetch = EAGER, targetEntity = InputType.class)
-    @Fetch(FetchMode.SELECT)
     private List<InputType> inputTypes;
     
     public FieldType() {}
