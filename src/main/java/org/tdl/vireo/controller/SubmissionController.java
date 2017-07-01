@@ -272,7 +272,7 @@ public class SubmissionController {
             if (orcidErrors.isEmpty()) {
                 Submission submission = submissionRepo.findOne(submissionId);
                 if (fieldValue.getId() == null) {
-                    submission.addFieldValue(fieldValueRepo.save(fieldValue));
+                    submissionFieldProfile.addFieldValue(fieldValue);
                     submission = submissionRepo.save(submission);
                     fieldValue = submission.getFieldValueByValueAndPredicate(fieldValue.getValue() == null ? "" : fieldValue.getValue(), fieldValue.getFieldPredicate());
 
@@ -521,7 +521,9 @@ public class SubmissionController {
     @Auth(role = "STUDENT")
     public ApiResponse removeFieldValue(@ApiVariable("submissionId") Long submissionId, @ApiModel FieldValue fieldValue) {
         Submission submission = submissionRepo.findOne(submissionId);
-        submission.removeFieldValue(fieldValue);
+                
+        fieldValue.getSubmissionFieldProfile().removeFieldValue(fieldValue);
+        
         submissionRepo.save(submission);
         simpMessagingTemplate.convertAndSend("/channel/submission/" + submission.getId() + "/removed-field-value", new ApiResponse(SUCCESS, fieldValue));
         return new ApiResponse(SUCCESS);

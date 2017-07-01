@@ -102,7 +102,8 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
                         FieldValue fieldValue = fieldValueRepo.create(afp.getFieldPredicate());
 
                         fieldValue.setValue(credentialValue);
-                        submission.addFieldValue(fieldValue);
+                        afp.addFieldValue(fieldValue);
+                   
                     }
                 }
             });
@@ -120,7 +121,7 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
             FieldValue fieldValue = fieldValueRepo.create(sfp.getFieldPredicate());
 
             fieldValue.setValue("false");
-            submission.addFieldValue(fieldValue);
+            sfp.addFieldValue(fieldValue);
         });
     }
 

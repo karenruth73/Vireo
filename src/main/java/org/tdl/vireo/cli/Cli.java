@@ -120,7 +120,7 @@ public class Cli implements CommandLineRunner {
 									if(! pred.getDocumentTypePredicate()) {
 										FieldValue val = fieldValueRepo.create(pred);
 										val.setValue("test value " + i);
-										sub.addFieldValue(val);
+										fp.addFieldValue(val);
 									}
 								}
 							}

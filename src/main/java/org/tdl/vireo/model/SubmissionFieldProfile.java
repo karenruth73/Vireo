@@ -13,7 +13,7 @@ import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
 @DiscriminatorValue("Sub")
 public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionFieldProfile> {
 
-    @OneToMany
+    @OneToMany(orphanRemoval=true)
     private List<FieldValue> fieldValues;
     
     public SubmissionFieldProfile() {
