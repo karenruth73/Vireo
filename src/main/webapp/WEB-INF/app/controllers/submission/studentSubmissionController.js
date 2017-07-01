@@ -15,7 +15,7 @@ vireo.controller("StudentSubmissionController", function($controller, $scope, $l
         $scope.studentSubmissionRepoReady = true;
 
         $scope.submission = new StudentSubmission(angular.fromJson(data.body).payload.Submission);
-
+        console.log($scope.submission);
         if ($location.hash()) {
             $scope.submission.ready().then(function() {
                 $scope.submission.validate();

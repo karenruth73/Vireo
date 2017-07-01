@@ -8,9 +8,6 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import edu.tamu.framework.model.BaseEntity;
 
 @Entity

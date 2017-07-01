@@ -331,4 +331,12 @@ public abstract class AbstractFieldProfile<FP> extends BaseEntity {
         this.mappedShibAttribute = mappedShibAttribute;
     }
 
+    public FieldType getFieldType() {
+        return fieldType;
+    }
+
+    public void setFieldType(FieldType fieldType) {
+        this.fieldType = fieldType;
+    }
+
 }

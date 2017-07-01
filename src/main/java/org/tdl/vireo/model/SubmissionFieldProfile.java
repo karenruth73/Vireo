@@ -9,8 +9,6 @@ import javax.persistence.OneToMany;
 
 import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
 
-import com.google.protobuf.UnknownFieldSet.Field;
-
 @Entity
 @DiscriminatorValue("Sub")
 public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionFieldProfile> {
@@ -25,9 +23,10 @@ public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionField
         setLogged(false);
         setFieldGlosses(new ArrayList<FieldGloss>());
         setControlledVocabularies(new ArrayList<ControlledVocabulary>());
+        setFieldType(null);
     }
 
-    public List<FieldValue> getFieldValue() {
+    public List<FieldValue> getFieldValues() {
         return fieldValues;
     }
 

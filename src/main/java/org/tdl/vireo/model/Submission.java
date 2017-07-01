@@ -51,8 +51,8 @@ public class Submission extends BaseEntity {
     @ManyToOne(cascade = { REFRESH }, fetch = EAGER, optional = false)
     private Organization organization;
 
-    @OneToMany(cascade = ALL, fetch = EAGER, orphanRemoval = true)
-    private Set<FieldValue> fieldValues;
+//    @OneToMany(cascade = ALL, fetch = EAGER, orphanRemoval = true)
+//    private Set<FieldValue> fieldValues;
 
     @ManyToMany(cascade = { REFRESH }, fetch = EAGER)
     @CollectionTable(uniqueConstraints = @UniqueConstraint(columnNames = { "submission_id", "submission_workflow_steps_id", "submissionWorkflowSteps_order" }))
@@ -98,7 +98,7 @@ public class Submission extends BaseEntity {
 
     public Submission() {
         setModelValidator(new SubmissionValidator());
-        setFieldValues(new HashSet<FieldValue>());
+//        setFieldValues(new HashSet<FieldValue>());
         setSubmissionWorkflowSteps(new ArrayList<SubmissionWorkflowStep>());
         setActionLogs(new ArrayList<ActionLog>());
         setEmbargoTypes(new HashSet<Embargo>());
@@ -213,32 +213,32 @@ public class Submission extends BaseEntity {
         this.organization = organization;
     }
 
-    /**
-     * @return the fieldvalues
-     */
-    public Set<FieldValue> getFieldValues() {
-        return fieldValues;
-    }
+//    /**
+//     * @return the fieldvalues
+//     */
+//    public Set<FieldValue> getFieldValues() {
+//        return fieldValues;
+//    }
+//
+//    /**
+//     * @param fieldvalues
+//     *            the fieldvalues to set
+//     */
+//    public void setFieldValues(Set<FieldValue> fieldvalues) {
+//        this.fieldValues = fieldvalues;
+//    }
 
-    /**
-     * @param fieldvalues
-     *            the fieldvalues to set
-     */
-    public void setFieldValues(Set<FieldValue> fieldvalues) {
-        this.fieldValues = fieldvalues;
-    }
-
-    /**
-     *
-     * @param fieldValue
-     */
-    public void addFieldValue(FieldValue fieldValue) {
-        getFieldValues().add(fieldValue);
-    }
+//    /**
+//     *
+//     * @param fieldValue
+//     */
+//    public void addFieldValue(FieldValue fieldValue) {
+//        getFieldValues().add(fieldValue);
+//    }
 
     public List<FieldValue> getFieldValuesByPredicate(FieldPredicate fieldPredicate) {
         List<FieldValue> fielsValues = new ArrayList<FieldValue>();
-        getFieldValues().forEach(fieldValue -> {
+        getAllDocumentFieldValues().forEach(fieldValue -> {
             if (fieldValue.getFieldPredicate().equals(fieldPredicate)) {
                 fielsValues.add(fieldValue);
             }
@@ -248,7 +248,7 @@ public class Submission extends BaseEntity {
 
     public List<FieldValue> getFieldValuesByPredicateValue(String predicateValue) {
         List<FieldValue> fielsValues = new ArrayList<FieldValue>();
-        getFieldValues().forEach(fieldValue -> {
+        getAllDocumentFieldValues().forEach(fieldValue -> {
             if (fieldValue.getFieldPredicate().getValue().equals(predicateValue)) {
                 fielsValues.add(fieldValue);
             }
@@ -262,7 +262,7 @@ public class Submission extends BaseEntity {
      */
     public FieldValue getFieldValueByValueAndPredicate(String value, FieldPredicate fieldPredicate) {
         FieldValue foundFieldValue = null;
-        for (FieldValue fieldValue : getFieldValues()) {
+        for (FieldValue fieldValue : getAllDocumentFieldValues()) {
             if (fieldValue.getValue().equals(value) && fieldValue.getFieldPredicate().equals(fieldPredicate)) {
                 foundFieldValue = fieldValue;
                 break;
@@ -271,13 +271,13 @@ public class Submission extends BaseEntity {
         return foundFieldValue;
     }
 
-    /**
-     *
-     * @param fieldValue
-     */
-    public void removeFieldValue(FieldValue fieldValue) {
-        getFieldValues().remove(fieldValue);
-    }
+//    /**
+//     *
+//     * @param fieldValue
+//     */
+//    public void removeFieldValue(FieldValue fieldValue) {
+//        getFieldValues().remove(fieldValue);
+//    }
 
     /**
      * @return the submissionWorkflowSteps
@@ -528,18 +528,22 @@ public class Submission extends BaseEntity {
     }
 
     public List<FieldValue> getAllDocumentFieldValues() {
-        List<FieldValue> fielsValues = new ArrayList<FieldValue>();
-        for (FieldValue fieldValue : getFieldValues()) {
-            if (fieldValue.getFieldPredicate().getDocumentTypePredicate()) {
-                fielsValues.add(fieldValue);
-            }
-        }
-        return fielsValues;
+        List<FieldValue> fieldValues = new ArrayList<FieldValue>();
+        
+        this.getSubmissionWorkflowSteps().forEach(wfs->{
+            wfs.getAggregateFieldProfiles().forEach(afp->{
+                afp.getFieldValues().forEach(fv->{
+                    fieldValues.add(fv);
+                });
+            });
+        });
+        
+        return fieldValues;
     }
 
     public FieldValue getPrimaryDocumentFieldValue() {
         FieldValue primaryDocumentFieldValue = null;
-        for (FieldValue fieldValue : getFieldValues()) {
+        for (FieldValue fieldValue : getAllDocumentFieldValues()) {
             if (fieldValue.getFieldPredicate().getValue().equals("_doctype_primary")) {
                 primaryDocumentFieldValue = fieldValue;
                 break;
@@ -550,7 +554,7 @@ public class Submission extends BaseEntity {
 
     public List<FieldValue> getSupplementalAndSourceDocumentFieldValues() {
         List<FieldValue> fielsValues = new ArrayList<FieldValue>();
-        for (FieldValue fieldValue : getFieldValues()) {
+        for (FieldValue fieldValue : getAllDocumentFieldValues()) {
             if (fieldValue.getFieldPredicate().getValue().equals("_doctype_supplemental") || fieldValue.getFieldPredicate().getValue().equals("_doctype_source")) {
                 fielsValues.add(fieldValue);
             }
@@ -560,7 +564,7 @@ public class Submission extends BaseEntity {
 
     public List<FieldValue> getLicenseAgreementFieldValues() {
         List<FieldValue> fielsValues = new ArrayList<FieldValue>();
-        for (FieldValue fieldValue : getFieldValues()) {
+        for (FieldValue fieldValue : getAllDocumentFieldValues()) {
             if (fieldValue.getFieldPredicate().getValue().equals("license_agreement")) {
                 fielsValues.add(fieldValue);
             }
