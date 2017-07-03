@@ -412,6 +412,10 @@ var apiMapping = {
         listen: {
             'endpoint': '/channel',
             'controller': 'field-profile'
+        },
+        fieldValuesListen: {
+            'endpoint': '/channel',
+            'controller': 'field-profile'
         }
     },
     InputType: {
@@ -668,6 +672,7 @@ var apiMapping = {
             'endpoint': '/channel',
             'controller': 'submission'
         },
+        // TODO Remove
         fieldValuesListen: {
             'endpoint': '/channel',
             'controller': 'submission'

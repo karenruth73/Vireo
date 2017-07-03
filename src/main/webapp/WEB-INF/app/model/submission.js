@@ -1,4 +1,4 @@
-var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsApi) {
+var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsApi, WorkflowStep) {
 
     return function Submission() {
 
@@ -10,19 +10,30 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
 
         submission.enableMergeCombinationOperation();
 
-        //populate fieldValues with models for existing values
-        var instantiateFieldValues = function() {
-            var fieldValues = angular.copy(submission.fieldValues);
-            if (submission.fieldValues) {
-                submission.fieldValues.length = 0;
+        //populate submissionWorkflowSteps with models for existing values
+        var instantiateSubmissionWorkflowSteps = function() {
+            var submissionWorkflowSteps = angular.copy(submission.submissionWorkflowSteps);
+            if (submission.submissionWorkflowSteps) {
+                submission.submissionWorkflowSteps.length = 0;
             }
-            angular.forEach(fieldValues, function(fieldValue) {
-            	fieldValue = new FieldValue(fieldValue);
-                if (fieldValue.fieldPredicate.documentTypePredicate) {
-                    enrichDocumentTypeFieldValue(fieldValue);
-                }
-                submission.fieldValues.push(fieldValue);
+            angular.forEach(submissionWorkflowSteps, function(swfs) {
+                swfs = new WorkflowStep(swfs);
+                submission.submissionWorkflowSteps.push(swfs);
             });
+
+
+
+            // var fieldValues = angular.copy(submission.fieldValues);
+            // if (submission.fieldValues) {
+            //     submission.fieldValues.length = 0;
+            // }
+            // angular.forEach(fieldValues, function(fieldValue) {
+            // 	fieldValue = new FieldValue(fieldValue);
+            //     if (fieldValue.fieldPredicate.documentTypePredicate) {
+            //         enrichDocumentTypeFieldValue(fieldValue);
+            //     }
+            //     submission.fieldValues.push(fieldValue);
+            // });
         };
 
         //populate actionLogs with models for existing values
@@ -53,12 +64,12 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
         };
 
         submission.listen(function() {
-            instantiateFieldValues();
+            instantiateSubmissionWorkflowSteps();
             instantiateActionLogs();
         });
 
         submission.before(function() {
-            instantiateFieldValues();
+            instantiateSubmissionWorkflowSteps();
 
             // populate fieldValues with models for empty values
             angular.forEach(submission.submissionWorkflowSteps, function(submissionWorkflowStep) {
@@ -83,44 +94,44 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
             });
         });
 
-        submission.before(function() {
-            angular.extend(apiMapping.Submission.fieldValuesListen, {
-                'method': submission.id + '/field-values'
-            });
-            WsApi.listen(apiMapping.Submission.fieldValuesListen).then(null, null, function(data) {
-                var replacedFieldValue = false;
-                var newFieldValue = angular.fromJson(data.body).payload.FieldValue;
-                var emptyFieldValues = [];
-                var fieldValue;
-                for (var i in submission.fieldValues) {
-                    fieldValue = submission.fieldValues[i];
-                    if (fieldValue.fieldPredicate.id === newFieldValue.fieldPredicate.id) {
-                        if (fieldValue.id) {
-                            if (fieldValue.id === newFieldValue.id) {
-                                angular.extend(fieldValue, newFieldValue);
-                                replacedFieldValue = true;
-                                break;
-                            }
-                        } else {
-                            emptyFieldValues.push(fieldValue);
-                        }
-                    }
-                }
-                if (emptyFieldValues.length === 1) {
-                    fieldValue = emptyFieldValues[0];
-                    angular.extend(fieldValue, newFieldValue);
-                    replacedFieldValue = true;
-                }
-                if (!replacedFieldValue) {
-                    fieldValue = new FieldValue(newFieldValue);
-                    submission.fieldValues.push(fieldValue);
-                }
-
-                if (fieldValue.fieldPredicate.documentTypePredicate) {
-                    enrichDocumentTypeFieldValue(fieldValue);
-                }
-            });
-        });
+        // submission.before(function() {
+        //     angular.extend(apiMapping.Submission.fieldValuesListen, {
+        //         'method': submission.id + '/field-values'
+        //     });
+        //     WsApi.listen(apiMapping.Submission.fieldValuesListen).then(null, null, function(data) {
+        //         var replacedFieldValue = false;
+        //         var newFieldValue = angular.fromJson(data.body).payload.FieldValue;
+        //         var emptyFieldValues = [];
+        //         var fieldValue;
+        //         for (var i in submission.fieldValues) {
+        //             fieldValue = submission.fieldValues[i];
+        //             if (fieldValue.fieldPredicate.id === newFieldValue.fieldPredicate.id) {
+        //                 if (fieldValue.id) {
+        //                     if (fieldValue.id === newFieldValue.id) {
+        //                         angular.extend(fieldValue, newFieldValue);
+        //                         replacedFieldValue = true;
+        //                         break;
+        //                     }
+        //                 } else {
+        //                     emptyFieldValues.push(fieldValue);
+        //                 }
+        //             }
+        //         }
+        //         if (emptyFieldValues.length === 1) {
+        //             fieldValue = emptyFieldValues[0];
+        //             angular.extend(fieldValue, newFieldValue);
+        //             replacedFieldValue = true;
+        //         }
+        //         if (!replacedFieldValue) {
+        //             fieldValue = new FieldValue(newFieldValue);
+        //             submission.fieldValues.push(fieldValue);
+        //         }
+        //
+        //         if (fieldValue.fieldPredicate.documentTypePredicate) {
+        //             enrichDocumentTypeFieldValue(fieldValue);
+        //         }
+        //     });
+        // });
 
         submission.before(function() {
             angular.extend(apiMapping.Submission.fieldValueRemovedListen, {

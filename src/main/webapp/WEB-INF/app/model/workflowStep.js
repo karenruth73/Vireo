@@ -1,4 +1,4 @@
-vireo.model("WorkflowStep", function WorkflowStep() {
+vireo.model("WorkflowStep", function WorkflowStep(FieldProfile) {
 
 	return function WorkflowStep() {
 
