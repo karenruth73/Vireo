@@ -1,14 +1,15 @@
 package org.tdl.vireo.model;
 
+import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.FetchType.EAGER;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-
-import static javax.persistence.CascadeType.REFRESH;
-import static javax.persistence.FetchType.EAGER;
 
 import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
 
@@ -17,7 +18,7 @@ import org.tdl.vireo.model.validation.SubmissionFieldProfileValidator;
 public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionFieldProfile> {
 
     @OneToMany(cascade = { REFRESH }, orphanRemoval=true, fetch=EAGER)
-    private List<FieldValue> fieldValues;
+    private Set<FieldValue> fieldValues;
     
     public SubmissionFieldProfile() {
         setModelValidator(new SubmissionFieldProfileValidator());
@@ -27,14 +28,14 @@ public class SubmissionFieldProfile extends AbstractFieldProfile<SubmissionField
         setFieldGlosses(new ArrayList<FieldGloss>());
         setControlledVocabularies(new ArrayList<ControlledVocabulary>());
         setFieldType(null);
-        setFieldValues(new ArrayList<FieldValue>());
+        setFieldValues(new HashSet<FieldValue>());
     }
 
-    public List<FieldValue> getFieldValues() {
+    public Set<FieldValue> getFieldValues() {
         return fieldValues;
     }
 
-    public void setFieldValues(List<FieldValue> fieldValues) {
+    public void setFieldValues(Set<FieldValue> fieldValues) {
         this.fieldValues = fieldValues;
     }
 

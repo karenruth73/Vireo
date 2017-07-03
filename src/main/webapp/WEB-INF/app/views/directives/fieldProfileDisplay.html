@@ -3,7 +3,6 @@
 		<label>{{profile.fieldGlosses[0].value}}:</label>
 	</div>
 	<div class="col-xs-12 col-sm-10">
-  {{profile}}
-  	<span ng-repeat="fv in profile.fieldValues">{{fv}}</span>
+  	<span ng-repeat="fv in profile.fieldValues">{{fv.value}}</span>
 	</div>
 </div>

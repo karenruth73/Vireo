@@ -93,27 +93,16 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
         submission.setSubmissionWorkflowSteps(submissionWorkflowStepRepo.cloneWorkflow(organization));
 
         submission.getSubmissionWorkflowSteps().forEach(ws -> {
-            ws.getAggregateFieldProfiles().forEach(afp -> {
-                Configuration mappedShibAttribute = afp.getMappedShibAttribute();
-                System.out.println(mappedShibAttribute!=null?mappedShibAttribute.getName():"It was null yo!");
+            ws.getAggregateFieldProfiles().forEach(sfp -> {
+                Configuration mappedShibAttribute = sfp.getMappedShibAttribute();
                 if (mappedShibAttribute != null) {
-                    
-                    
-                    System.out.println("credentials.getAllCredentials(): "+credentials.getAllCredentials());
-                    
-                    System.out.println("mappedShibAttribute.getValue(): " + mappedShibAttribute.getValue());
-                    
                     if (credentials.getAllCredentials().containsKey(mappedShibAttribute.getValue())) {
-
                         String credentialValue = credentials.getAllCredentials().get(mappedShibAttribute.getValue());
 
-                        FieldValue fieldValue = fieldValueRepo.create(afp.getFieldPredicate());
+                        FieldValue fieldValue = fieldValueRepo.create(sfp.getFieldPredicate());
 
                         fieldValue.setValue(credentialValue);
-                        afp.addFieldValue(fieldValue);
-                        
-                        System.out.println("\n\n"+fieldValue.getValue()+"\n\n");
-                   
+                        sfp.addFieldValue(fieldValue);
                     }
                 }
             });
