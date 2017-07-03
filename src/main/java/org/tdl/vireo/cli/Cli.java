@@ -8,7 +8,10 @@ import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.tdl.vireo.config.constant.ConfigurationName;
+import org.tdl.vireo.controller.SubmissionController;
 import org.tdl.vireo.enums.AppRole;
+import org.tdl.vireo.model.Configuration;
 import org.tdl.vireo.model.FieldPredicate;
 import org.tdl.vireo.model.FieldValue;
 import org.tdl.vireo.model.Organization;
@@ -17,11 +20,15 @@ import org.tdl.vireo.model.SubmissionFieldProfile;
 import org.tdl.vireo.model.SubmissionState;
 import org.tdl.vireo.model.SubmissionWorkflowStep;
 import org.tdl.vireo.model.User;
+import org.tdl.vireo.model.repo.ConfigurationRepo;
 import org.tdl.vireo.model.repo.FieldValueRepo;
 import org.tdl.vireo.model.repo.OrganizationRepo;
 import org.tdl.vireo.model.repo.SubmissionRepo;
 import org.tdl.vireo.model.repo.SubmissionStateRepo;
 import org.tdl.vireo.model.repo.UserRepo;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import edu.tamu.framework.model.Credentials;
 
@@ -48,8 +55,10 @@ public class Cli implements CommandLineRunner {
 
 	@Autowired
 	FieldValueRepo fieldValueRepo;
-
-
+	
+	@Autowired
+	ConfigurationRepo configurationRepo;
+	
 	@Override
 	public void run(String... arg0) throws Exception {
 		boolean runConsole = false;
@@ -103,8 +112,9 @@ public class Cli implements CommandLineRunner {
 					case "generate":
 
 						Organization org = organizationRepo.findAll().get(0);
-						SubmissionState state = submissionStateRepo.findAll().get(0);
 
+						SubmissionState state = submissionStateRepo.findAll().get(0);
+						
 						if(commandArgs.size() > 0 ) {
 							try {
 								num = Integer.parseInt(commandArgs.get(0));
@@ -115,24 +125,40 @@ public class Cli implements CommandLineRunner {
 
 
 						for(int i = itemsGenerated; i < num + itemsGenerated; i++) {
-							User submitter = userRepo.create("bob" + (i+1) + "@boring.bob", "bob", "boring", AppRole.STUDENT);
-							Credentials credentials = new Credentials();
+							String email = "bob" + (i+1) + "@boring.bob";
+							AppRole role = AppRole.STUDENT;
+
+							// get shib headers out of DB
+							String netIdHeader = configurationRepo.getValue(ConfigurationName.APPLICATION_AUTH_SHIB_ATTRIBUTE_NETID, "netid");
+							String firstNameHeader = configurationRepo.getValue(ConfigurationName.APPLICATION_AUTH_SHIB_ATTRIBUTE_FIRST_NAME, "firstName");
+							String lastNameHeader = configurationRepo.getValue(ConfigurationName.APPLICATION_AUTH_SHIB_ATTRIBUTE_LAST_NAME, "lastName");
+							String emailHeader = configurationRepo.getValue(ConfigurationName.APPLICATION_AUTH_SHIB_ATTRIBUTE_EMAIL, "email");
+							String institutionalIdentifierHeader = configurationRepo.getValue(ConfigurationName.APPLICATION_AUTH_SHIB_ATTRIBUTE_INSTITUTIONAL_IDENTIFIER, "uin");
 							
 							Map<String, String> allCredentials = new HashMap<String, String>();
 							
-							allCredentials.put("firstName", "Bob");
-							allCredentials.put("lastName", "Boring");
-							allCredentials.put("email", "bob@boring.bob");
-							allCredentials.put("role", "bore");
-							allCredentials.put("uin", "123456789");
+							allCredentials.put(firstNameHeader, "Bob");
+							allCredentials.put(lastNameHeader, "Boring");
+							allCredentials.put(emailHeader, email);
+							allCredentials.put("role", role.toString());
+							allCredentials.put(institutionalIdentifierHeader, "12345678"+i);
+							allCredentials.put(netIdHeader,"bboring"+i);
 							
-							credentials.setAllCredentials(allCredentials);
+							Credentials credentials = new Credentials(allCredentials);
 							
-							Submission sub = submissionRepo.create(submitter, org, state, credentials);
+							User submitter = userRepo.create(credentials.getEmail(), credentials.getFirstName(), credentials.getLastName(), role);
+							
+							submitter.setNetid(credentials.getNetid());
+							submitter.setUin(credentials.getUin());
+							userRepo.saveAndFlush(submitter);
+							
+							Submission sub = submissionRepo.create(userRepo.findByEmail(credentials.getEmail()), org, state, credentials);
+
 							for(SubmissionWorkflowStep step : sub.getSubmissionWorkflowSteps() ) {
 								for(SubmissionFieldProfile fp : step.getAggregateFieldProfiles()) {
+									Configuration mappedShibAttribute = fp.getMappedShibAttribute();
 									FieldPredicate pred = fp.getFieldPredicate();
-									if(! pred.getDocumentTypePredicate()) {
+									if(! pred.getDocumentTypePredicate() && mappedShibAttribute == null) {
 										FieldValue val = fieldValueRepo.create(pred);
 										val.setValue("test value " + i);
 										fp.addFieldValue(val);
@@ -140,7 +166,7 @@ public class Cli implements CommandLineRunner {
 								}
 							}
 							submissionRepo.saveAndFlush(sub);
-
+							
 							System.out.print("\r" + (i-itemsGenerated) + " of " + num + " generated...");
 
 						}
