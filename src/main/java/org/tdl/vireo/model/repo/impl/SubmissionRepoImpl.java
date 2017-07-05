@@ -237,7 +237,7 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
                     sqlJoinsBuilder.append("\nLEFT JOIN").append("\n FIELD_VALUE fv").append(n).append(" ON fv").append(n).append(".submission_field_profile_id=swsafp").append(n).append(".aggregate_field_profiles_id");
 
                     if (submissionListColumn.getSortOrder() > 0) {
-                        setColumnOrdering(submissionListColumn.getSort(), sqlSelectBuilder, sqlOrderBysBuilder, " pfv" + n + ".value");
+                        setColumnOrdering(submissionListColumn.getSort(), sqlSelectBuilder, sqlOrderBysBuilder, " fv" + n + ".value");
                     }
 
                     for (String filterString : submissionListColumn.getFilters()) {
