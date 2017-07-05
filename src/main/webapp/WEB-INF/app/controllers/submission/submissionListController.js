@@ -392,7 +392,6 @@ vireo.controller("SubmissionListController", function(NgTableParams, uibDatePars
         for (var j in array) {
 
             var member = array[j];
-
             if (member.fieldPredicate !== undefined) {
                 if (member.fieldPredicate.value == col.predicate) {
                     value += value.length > 0 ? ", " + member.value : member.value;
@@ -419,6 +418,19 @@ vireo.controller("SubmissionListController", function(NgTableParams, uibDatePars
 
             if (value === undefined) {
                 value = row[col.valuePath[i]];
+                if (value === undefined) {
+                    //looking for field profile values
+                    for (var w in row.submissionWorkflowSteps) {
+                        for (f in row.submissionWorkflowSteps[w].aggregateFieldProfiles) {
+                            if (col.predicate != null && row.submissionWorkflowSteps[w].aggregateFieldProfiles[f].fieldPredicate.value == col.predicate) {
+                                if (row.submissionWorkflowSteps[w].aggregateFieldProfiles[f][col.valuePath[0]][0] !== undefined) {
+                                    value = row.submissionWorkflowSteps[w].aggregateFieldProfiles[f][col.valuePath[0]][0][col.valuePath[1]];
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 if (value instanceof Array) {
                     return getValueFromArray(value, col);
