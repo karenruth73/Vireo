@@ -234,7 +234,13 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
 
                     Long predicateId = fieldPredicateRepo.findByValue(submissionListColumn.getPredicate()).getId();
 
-                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n  (SELECT sfv").append(n).append(".submission_id, fv").append(n).append(".*").append("\n   FROM submission_field_values sfv").append(n).append("\n   LEFT JOIN field_value fv").append(n).append(" ON fv").append(n).append(".id=sfv").append(n).append(".field_values_id ").append("\n   WHERE fv").append(n).append(".field_predicate_id=").append(predicateId).append(") pfv").append(n).append("\n	ON pfv").append(n).append(".submission_id=s.id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n  SUBMISSION_SUBMISSION_WORKFLOW_STEPS ssws").append(n).append(" ON ssws").append(n).append(".submission_id=s.id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n SUBMISSION_WORKFLOW_STEP_AGGREGATE_FIELD_PROFILES swsafp").append(n).append(" ON swsafp").append(n).append(".submission_workflow_step_id=ssws").append(n).append(".submission_workflow_steps_id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n FIELD_VALUE fv").append(n).append(" ON fv").append(n).append(".submission_field_profile_id=swsafp").append(n).append(".aggregate_field_profiles_id");
+                    //left join SUBMISSION_WORKFLOW_STEP_AGGREGATE_FIELD_PROFILES swsafp(n) ON swsafp(n).submission_workflow_step_id=ssws(n).submission_workflow_step_id
+                    //left join swsafp(n).aggregate_field_profile_id ON FIELD_VALUE.submission_field_profile_id 
+
+//                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n  (SELECT sfv").append(n).append(".submission_id, fv").append(n).append(".*").append("\n   FROM submission_field_values sfv").append(n).append("\n   LEFT JOIN field_value fv").append(n).append(" ON fv").append(n).append(".id=sfv").append(n).append(".field_values_id ").append("\n   WHERE fv").append(n).append(".field_predicate_id=").append(predicateId).append(") pfv").append(n).append("\n	ON pfv").append(n).append(".submission_id=s.id");
 
                     if (submissionListColumn.getSortOrder() > 0) {
                         setColumnOrdering(submissionListColumn.getSort(), sqlSelectBuilder, sqlOrderBysBuilder, " pfv" + n + ".value");
