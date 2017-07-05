@@ -24,7 +24,7 @@ vireo.directive("field", function($controller, $filter, $q, $timeout, FileUpload
                     return $q(function(resolve) {
                         // give typeahead time to set the value
                         $timeout(function() {
-                            $scope.submission.saveFieldValue(fieldValue, $scope.profile).then(function(res) {
+                            $scope.profile.saveFieldValue(fieldValue).then(function(res) {
                                 delete fieldValue.updating;
                                 if ($scope.fieldProfileForm !== undefined) {
                                     $scope.fieldProfileForm.$setPristine();
@@ -218,7 +218,7 @@ vireo.directive("field", function($controller, $filter, $q, $timeout, FileUpload
                 fieldValue.value = checked ? fieldValue.value : null;
                 //Only save if checked == true and value is a non-empty string OR if checked == false and value is not a string (which it won't have been anyway given the line above)
                 if(!checked == !fieldValue.value)  $scope.save(fieldValue);
-            } 
+            }
 
             var refreshFieldValues = function() {
                 $scope.fieldValues = $filter('fieldValuePerProfile')($scope.profile.fieldValues, $scope.profile.fieldPredicate);

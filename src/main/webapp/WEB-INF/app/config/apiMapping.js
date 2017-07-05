@@ -416,6 +416,10 @@ var apiMapping = {
         fieldValuesListen: {
             'endpoint': '/channel',
             'controller': 'field-profile'
+        },
+        saveFieldValue: {
+            'endpoint': '/channel',
+            'controller': 'submission-field-profile'
         }
     },
     InputType: {

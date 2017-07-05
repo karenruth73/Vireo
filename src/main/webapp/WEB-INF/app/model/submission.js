@@ -12,12 +12,16 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
 
         //populate submissionWorkflowSteps with models for existing values
         var instantiateSubmissionWorkflowSteps = function() {
+            console.log("inst SWFS");
             var submissionWorkflowSteps = angular.copy(submission.submissionWorkflowSteps);
+            console.log(submissionWorkflowSteps);
             if (submission.submissionWorkflowSteps) {
                 submission.submissionWorkflowSteps.length = 0;
             }
             angular.forEach(submissionWorkflowSteps, function(swfs) {
                 swfs = new WorkflowStep(swfs);
+                swfs.instantiateFieldProfiles();
+                console.log(swfs);
                 submission.submissionWorkflowSteps.push(swfs);
             });
 
@@ -298,65 +302,66 @@ var submissionModel = function($q, ActionLog, FieldValue, FileApi, RestApi, WsAp
 
         };
 
-        submission.saveFieldValue = function(fieldValue, fieldProfile) {
-            fieldValue.setIsValid(true);
-            fieldValue.setValidationMessages([]);
-
-            if ((!fieldValue.value || fieldValue.value === "") && !fieldProfile.optional) {
-                return $q(function(resolve) {
-                    fieldValue.setIsValid(false);
-                    fieldValue.addValidationMessage("This field is required");
-                    resolve();
-                });
-            }
-
-            angular.extend(this.getMapping().saveFieldValue, {
-                method: submission.id + "/update-field-value/" + fieldProfile.id,
-                data: fieldValue
-            });
-
-            var promise = WsApi.fetch(this.getMapping().saveFieldValue);
-
-            promise.then(function(response) {
-                var responseObj = angular.fromJson(response.body);
-                if (responseObj.meta.type === "INVALID") {
-                    fieldValue.setIsValid(false);
-                    angular.forEach(responseObj.payload.HashMap.value, function(value) {
-                        fieldValue.addValidationMessage(value);
-                    });
-
-                } else {
-                    fieldValue.setIsValid(true);
-                    var updatedFieldValue = responseObj.payload.FieldValue;
-                    var matchingFieldValues = {};
-                    for (var i = submission.fieldValues.length - 1; i >= 0; i--) {
-                        var currentFieldValue = submission.fieldValues[i];
-                        if ((currentFieldValue.id === undefined || currentFieldValue.id === updatedFieldValue.id) && currentFieldValue.value == updatedFieldValue.value && currentFieldValue.fieldPredicate.id == updatedFieldValue.fieldPredicate.id) {
-
-                            matchingFieldValues[i] = currentFieldValue;
-
-                            for (var j in matchingFieldValues) {
-                                if (currentFieldValue.file !== undefined) {
-                                    matchingFieldValues[j].file = currentFieldValue.file;
-                                }
-                            }
-                        }
-                    }
-                    var updated = false;
-                    for (var k in matchingFieldValues) {
-                        if (!updated) {
-                            updated = true;
-                            angular.extend(matchingFieldValues[k], updatedFieldValue);
-                        } else {
-                            submission.fieldValues.splice(k, 1);
-                        }
-                    }
-                }
-
-            });
-
-            return promise;
-        };
+        // submission.saveFieldValue = function(fieldValue, fieldProfile) {
+        //     console.log(fieldValue);
+        //     fieldValue.setIsValid(true);
+        //     fieldValue.setValidationMessages([]);
+        //
+        //     if ((!fieldValue.value || fieldValue.value === "") && !fieldProfile.optional) {
+        //         return $q(function(resolve) {
+        //             fieldValue.setIsValid(false);
+        //             fieldValue.addValidationMessage("This field is required");
+        //             resolve();
+        //         });
+        //     }
+        //
+        //     angular.extend(this.getMapping().saveFieldValue, {
+        //         method: submission.id + "/update-field-value/" + fieldProfile.id,
+        //         data: fieldValue
+        //     });
+        //
+        //     var promise = WsApi.fetch(this.getMapping().saveFieldValue);
+        //
+        //     promise.then(function(response) {
+        //         var responseObj = angular.fromJson(response.body);
+        //         if (responseObj.meta.type === "INVALID") {
+        //             fieldValue.setIsValid(false);
+        //             angular.forEach(responseObj.payload.HashMap.value, function(value) {
+        //                 fieldValue.addValidationMessage(value);
+        //             });
+        //
+        //         } else {
+        //             fieldValue.setIsValid(true);
+        //             var updatedFieldValue = responseObj.payload.FieldValue;
+        //             var matchingFieldValues = {};
+        //             for (var i = submission.fieldValues.length - 1; i >= 0; i--) {
+        //                 var currentFieldValue = submission.fieldValues[i];
+        //                 if ((currentFieldValue.id === undefined || currentFieldValue.id === updatedFieldValue.id) && currentFieldValue.value == updatedFieldValue.value && currentFieldValue.fieldPredicate.id == updatedFieldValue.fieldPredicate.id) {
+        //
+        //                     matchingFieldValues[i] = currentFieldValue;
+        //
+        //                     for (var j in matchingFieldValues) {
+        //                         if (currentFieldValue.file !== undefined) {
+        //                             matchingFieldValues[j].file = currentFieldValue.file;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             var updated = false;
+        //             for (var k in matchingFieldValues) {
+        //                 if (!updated) {
+        //                     updated = true;
+        //                     angular.extend(matchingFieldValues[k], updatedFieldValue);
+        //                 } else {
+        //                     submission.fieldValues.splice(k, 1);
+        //                 }
+        //             }
+        //         }
+        //
+        //     });
+        //
+        //     return promise;
+        // };
 
         submission.validate = function() {
             submission.isValid = false;
