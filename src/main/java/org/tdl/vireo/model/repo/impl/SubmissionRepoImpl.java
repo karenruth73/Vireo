@@ -232,9 +232,10 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
                 switch (String.join(".", submissionListColumn.getValuePath())) {
                 case "fieldValues.value":
 
-                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n  SUBMISSION_SUBMISSION_WORKFLOW_STEPS ssws").append(n).append(" ON ssws").append(n).append(".submission_id=s.id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n SUBMISSION_SUBMISSION_WORKFLOW_STEPS ssws").append(n).append(" ON ssws").append(n).append(".submission_id=s.id");
                     sqlJoinsBuilder.append("\nLEFT JOIN").append("\n SUBMISSION_WORKFLOW_STEP_AGGREGATE_FIELD_PROFILES swsafp").append(n).append(" ON swsafp").append(n).append(".submission_workflow_step_id=ssws").append(n).append(".submission_workflow_steps_id");
-                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n FIELD_VALUE fv").append(n).append(" ON fv").append(n).append(".submission_field_profile_id=swsafp").append(n).append(".aggregate_field_profiles_id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n ABSTRACT_FIELD_PROFILE_FIELD_VALUES afv").append(n).append(" ON afv").append(n).append(".submission_field_profile_id=swsafp").append(n).append(".aggregate_field_profiles_id");
+                    sqlJoinsBuilder.append("\nLEFT JOIN").append("\n FIELD_VALUE fv").append(n).append(" ON fv").append(n).append(".id=afv").append(n).append(".field_values_id");
 
                     if (submissionListColumn.getSortOrder() > 0) {
                         setColumnOrdering(submissionListColumn.getSort(), sqlSelectBuilder, sqlOrderBysBuilder, " fv" + n + ".value");
@@ -248,29 +249,29 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
                             if (filterString.contains("|")) {
                                 // Date Range
                                 String[] dates = filterString.split(Pattern.quote("|"));
-                                sqlWheresBuilder.append(" ( CAST(pfv").append(n).append(".value AS DATETIME) BETWEEN '").append(dates[0]).append("' AND '").append(dates[1]).append("') OR");
+                                sqlWheresBuilder.append(" ( CAST(fv").append(n).append(".value AS DATETIME) BETWEEN '").append(dates[0]).append("' AND '").append(dates[1]).append("') OR");
 
                             } else {
                                 // Date Match
-                                sqlWheresBuilder.append(" ( CAST(pfv").append(n).append(".value AS DATETIME) = '").append(filterString).append("') OR");
+                                sqlWheresBuilder.append(" ( CAST(fv").append(n).append(".value AS DATETIME) = '").append(filterString).append("') OR");
                             }
                             break;
                         case "INPUT_CHECKBOX":
                             // Column's values are a boolean
                             if (Boolean.valueOf(filterString)) {
-                                sqlWheresBuilder.append(" pfv").append(n).append(".value = '").append(filterString).append("' OR");
+                                sqlWheresBuilder.append(" fv").append(n).append(".value = '").append(filterString).append("' OR");
                             } else {
-                                sqlWheresBuilder.append(" pfv").append(n).append(".value = '").append(filterString).append("' OR").append(" pfv").append(n).append(".value IS NULL ").append(" OR");
+                                sqlWheresBuilder.append(" fv").append(n).append(".value = '").append(filterString).append("' OR").append(" fv").append(n).append(".value IS NULL ").append(" OR");
                             }
                             break;
                         default:
                             // Column's values can be handled by this default
                             if (submissionListColumn.getExactMatch()) {
                                 // perform exact match
-                                sqlWheresBuilder.append(" pfv").append(n).append(".value = '").append(filterString).append("' OR");
+                                sqlWheresBuilder.append(" fv").append(n).append(".value = '").append(filterString).append("' OR");
                             } else {
                                 // perform like when input from text field
-                                sqlWheresBuilder.append(" LOWER(pfv").append(n).append(".value) LIKE '%").append(filterString.toLowerCase()).append("%' OR");
+                                sqlWheresBuilder.append(" LOWER(fv").append(n).append(".value) LIKE '%").append(filterString.toLowerCase()).append("%' OR");
                             }
                             break;
                         }
@@ -279,7 +280,7 @@ public class SubmissionRepoImpl implements SubmissionRepoCustom {
 
                     // all column search filter
                     for (String filterString : allColumnSearchFilters) {
-                        sqlWheresBuilder.append(" LOWER(pfv").append(n).append(".value) LIKE '%").append(filterString.toLowerCase()).append("%' OR");
+                        sqlWheresBuilder.append(" LOWER(fv").append(n).append(".value) LIKE '%").append(filterString.toLowerCase()).append("%' OR");
                     }
 
                     n++;
