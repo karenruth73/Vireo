@@ -23,9 +23,9 @@
 			</td>
 		  </tr>
 		</table>
-	
 		<div ng-controller="SettingsController">
-			<button class="btn btn-primary" ng-if="multipleSubmissions()" ng-click="openModal('#confirmNewSubmission')">New Submission</button>
+			<button class="btn btn-primary" ng-if="multipleSubmissions()&&hasSubmissions()" ng-click="openModal('#confirmNewSubmission')">New Submission</button>
+			<button class="btn btn-primary" ng-if="!hasSubmissions()" ng-click="startNewSubmission('/submission/new')">New Submission</button>
 
 			<modal 
 				modal-id="confirmNewSubmission" 

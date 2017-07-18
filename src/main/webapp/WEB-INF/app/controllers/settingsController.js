@@ -85,6 +85,7 @@ vireo.controller("SettingsController", function($controller, $scope, $timeout, U
         ConfigurationRepo.ready().then(function() {
 
             $scope.hasSubmissions = function() {
+console.log("testing!!");
                 return submissions.length > 0;
             };
 
