@@ -769,7 +769,7 @@ var apiMapping = {
     },
     StudentSubmission: {
         lazy: true,
-        modelListeners: false,
+        modelListeners: true,
         all: {
             'endpoint': '/private/queue',
             'controller': 'submission',
@@ -844,7 +844,7 @@ var apiMapping = {
     },
     AdvisorSubmission: {
         lazy: true,
-        modelListeners: false,
+        modelListeners: true,
         getByHash: {
             'endpoint': '/private/queue',
             'controller': 'submission',
