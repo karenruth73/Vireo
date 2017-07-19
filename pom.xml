@@ -362,7 +362,6 @@
           </execution>
 
           <!-- Grunt Deploy -->
-          <!--
           <execution>
             <id>exec-grunt-deploy</id>
             <phase>generate-sources</phase> 
@@ -376,7 +375,6 @@
               <goal>exec</goal>
             </goals>
           </execution>
-          -->
 
         </executions>
       </plugin>
