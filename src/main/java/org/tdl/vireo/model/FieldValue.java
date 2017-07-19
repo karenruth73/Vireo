@@ -3,6 +3,7 @@ package org.tdl.vireo.model;
 import static javax.persistence.CascadeType.DETACH;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.FetchType.EAGER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,10 @@ public class FieldValue extends BaseEntity {
     @Column(nullable = true)
     private String identifier;
 
-    @ElementCollection
+    @ElementCollection(fetch = EAGER)
     private List<String> contacts;
 
-    @ManyToOne(cascade = { DETACH, REFRESH, MERGE }, optional = false)
+    @ManyToOne(fetch = EAGER, cascade = { DETACH, REFRESH, MERGE }, optional = false)
     private FieldPredicate fieldPredicate;
 
     public FieldValue() {
